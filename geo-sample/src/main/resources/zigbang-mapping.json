@@ -1,0 +1,23 @@
+{
+  "settings": {
+    "number_of_replicas": 0,
+    "number_of_shards": 1
+  },
+  "mappings": {
+    "_doc": {
+      "dynamic": "strict",
+      "properties": {
+        "viewCount": {
+          "type": "integer"
+        },
+        "pin": {
+          "properties": {
+            "location": {
+              "type": "geo_point"
+            }
+          }
+        }
+      }
+    }
+  }
+}

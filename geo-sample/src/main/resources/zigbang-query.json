@@ -1,0 +1,33 @@
+{
+  "latlngQuery": {
+    "query": {
+      "geo_bounding_box": {
+        "pin.location": {
+          "top_left": {
+            "lat": 37.64315402090561,
+            "lng": 126.89122644833998
+          },
+          "bottom_right": {
+            "lat": 37.58062430845063,
+            "lng": 126.9446158895186
+          }
+        }
+      }
+    }
+  },
+
+  "geohashQuery": {
+    "query": {
+      "geo_bounding_box": {
+        "pin.location": {
+          "top_left": {
+            "geohash": "wydnpkxr7bs0"
+          },
+          "bottom_right": {
+            "geohash": "wydmb9q5pbnk"
+          }
+        }
+      }
+    }
+  }
+}

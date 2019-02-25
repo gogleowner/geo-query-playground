@@ -20,16 +20,15 @@ import java.util.stream.Collectors;
 
 public class SampleDataIndexer {
 
-
-    RestHighLevelClient elasticsearchClient =
+    private RestHighLevelClient elasticsearchClient =
             new RestHighLevelClient(RestClient.builder(
                     new HttpHost("localhost", 9200, "http")));
-    ObjectMapper mapper = new ObjectMapper();
-
+    private ObjectMapper mapper = new ObjectMapper();
 
 
     public static void main(String[] args) throws Exception {
-        String requestUrl = "https://apis.zigbang.com/v3/search/getItemByRect?lat_south=37.58062430845063&lat_north=37.64315402090561&lng_west=126.89122644833998&lng_east=126.9446158895186&detail=false&level=14&items=false&ad=true&room_types=[01,02,03,04,05]";
+//        String requestUrl = "https://apis.zigbang.com/v3/search/getItemByRect?lat_south=37.58062430845063&lat_north=37.64315402090561&lng_west=126.89122644833998&lng_east=126.9446158895186&detail=false&level=14&items=false&ad=true&room_types=[01,02,03,04,05]";
+        String requestUrl = "https://apis.zigbang.com/v3/search/getItemByRect?lat_south=37.26560495001813&lat_north=37.658852804917764&lng_west=126.86796109108576&lng_east=127.30245511837498&detail=false&level=12&items=false&ad=true&room_types=[01,02,03,04,05]";
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -136,12 +135,6 @@ public class SampleDataIndexer {
 
         public ZigBangDocument(ZigBangItem item) {
             this.viewCount = item.viewCount;
-
-
-            // TODO lat, lng must change to geohash
-            // References : GeoHashUtils , http://geohash.co
-
-
             this.pin = new Pin(item.lat, item.lng);
         }
 
@@ -172,29 +165,20 @@ public class SampleDataIndexer {
         }
 
         public static class Location {
-            private double lat, lng;
+            private String geohash;
 
             public Location() {}
 
             public Location(double lat, double lng) {
-                this.lat = lat;
-                this.lng = lng;
+                this.geohash = GeoHashUtils.stringEncode(lng, lat);
             }
 
-            public double getLat() {
-                return lat;
+            public String getGeohash() {
+                return geohash;
             }
 
-            public void setLat(double lat) {
-                this.lat = lat;
-            }
-
-            public double getLng() {
-                return lng;
-            }
-
-            public void setLng(double lng) {
-                this.lng = lng;
+            public void setGeohash(String geohash) {
+                this.geohash = geohash;
             }
         }
     }

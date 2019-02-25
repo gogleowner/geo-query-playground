@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="sample.geoes.geo-sample.main" target="1.8" />
-      <module name="sample.geoes.geo-sample.test" target="1.8" />
+      <module name="geo-sample.main" target="1.8" />
+      <module name="geo-sample.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

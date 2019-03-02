@@ -24,9 +24,6 @@ public class SampleGeoDataSearcher {
     private ObjectMapper mapper = new ObjectMapper();
 
     public static void main(String[] args) {
-
-
-
         SampleGeoDataSearcher searcher = new SampleGeoDataSearcher();
 
         Collection<String> documents = searcher.search(37.64315402090561d, 126.89122644833998d,

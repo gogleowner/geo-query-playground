@@ -1,11 +1,12 @@
 package geo.sample;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import geo.sample.dto.PlaceDocument;
+import geo.sample.dto.ZigbangItem;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -30,11 +31,10 @@ public class SampleDataIndexer {
         String requestUrl = "https://apis.zigbang.com/v3/search/getItemByRect?lat_south=37.26560495001813&lat_north=37.658852804917764&lng_west=126.86796109108576&lng_east=127.30245511837498&detail=false&level=12&items=false&ad=true&room_types=[01,02,03,04,05]";
 
         RestTemplate restTemplate = new RestTemplate();
-
-        ZigBangResponse result = restTemplate.getForObject(requestUrl, ZigBangResponse.class);
+        ZigbangResponse result = restTemplate.getForObject(requestUrl, ZigbangResponse.class);
 
         System.out.println(result.mapItems.size());
-        for (ZigBangItem mapItem : result.mapItems) {
+        for (ZigbangItem mapItem : result.mapItems) {
             System.out.println(mapItem);
         }
 
@@ -45,13 +45,9 @@ public class SampleDataIndexer {
         sampleDataIndexer.close();
     }
 
-    private void close() throws Exception {
-        elasticsearchClient.close();
-    }
-
-    private void index(List<ZigBangItem> items) {
+    private void index(List<ZigbangItem> items) {
         List<IndexRequest> indexRequests = items.stream()
-                .map(ZigBangDocument::new)
+                .map(PlaceDocument::new)
                 .map(document -> {
                     try {
                         System.out.println(mapper.writeValueAsString(document));
@@ -74,123 +70,17 @@ public class SampleDataIndexer {
     }
 
 
+    private void close() throws Exception {
+        elasticsearchClient.close();
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class ZigBangResponse {
+    public static class ZigbangResponse {
 
-        List<ZigBangItem> mapItems;
+        List<ZigbangItem> mapItems;
 
-        public void setMapItems(List<ZigBangItem> mapItems) {
+        public void setMapItems(List<ZigbangItem> mapItems) {
             this.mapItems = mapItems;
-        }
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class ZigBangItem {
-        private double lat;
-
-        @JsonSetter("lng")
-        private double lon;
-
-        @JsonSetter("view_count")
-        private int viewCount;
-
-        public double getLat() {
-            return lat;
-        }
-
-        public double getLon() {
-            return lon;
-        }
-
-        public int getViewCount() {
-            return viewCount;
-        }
-
-        public void setLat(double lat) {
-            this.lat = lat;
-        }
-
-        public void setLon(double lon) {
-            this.lon = lon;
-        }
-
-        public void setViewCount(int viewCount) {
-            this.viewCount = viewCount;
-        }
-
-        @Override
-        public String toString() {
-            return "ZigBangItem{" +
-                    "lat=" + lat +
-                    ", lon=" + lon +
-                    ", viewCount=" + viewCount +
-                    '}';
-        }
-    }
-
-    public static class ZigBangDocument {
-        private int viewCount;
-        @JsonProperty("pin")
-        private Pin pin;
-
-        public ZigBangDocument() {}
-
-        public ZigBangDocument(ZigBangItem item) {
-            this.viewCount = item.viewCount;
-            this.pin = new Pin(item.lat, item.lon);
-        }
-
-        public int getViewCount() {
-            return viewCount;
-        }
-
-        public void setViewCount(int viewCount) {
-            this.viewCount = viewCount;
-        }
-
-        public static class Pin {
-            Location location;
-
-            public Pin() {}
-
-            public Pin(double lat, double lon) {
-                this.location = new Location(lat, lon);
-            }
-
-            public Location getLocation() {
-                return location;
-            }
-
-            public void setLocation(Location location) {
-                this.location = location;
-            }
-        }
-
-        public static class Location {
-            private double lat, lon;
-
-            public Location() {}
-
-            public Location(double lat, double lon) {
-                this.lat = lat;
-                this.lon = lon;
-            }
-
-            public double getLat() {
-                return lat;
-            }
-
-            public void setLat(double lat) {
-                this.lat = lat;
-            }
-
-            public double getLon() {
-                return lon;
-            }
-
-            public void setLon(double lon) {
-                this.lon = lon;
-            }
         }
     }
 

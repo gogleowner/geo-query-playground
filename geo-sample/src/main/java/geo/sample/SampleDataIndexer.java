@@ -10,7 +10,6 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.geo.GeoHashUtils;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.web.client.RestTemplate;
 
@@ -87,7 +86,10 @@ public class SampleDataIndexer {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ZigBangItem {
-        private double lat, lng;
+        private double lat;
+
+        @JsonSetter("lng")
+        private double lon;
 
         @JsonSetter("view_count")
         private int viewCount;
@@ -96,8 +98,8 @@ public class SampleDataIndexer {
             return lat;
         }
 
-        public double getLng() {
-            return lng;
+        public double getLon() {
+            return lon;
         }
 
         public int getViewCount() {
@@ -108,8 +110,8 @@ public class SampleDataIndexer {
             this.lat = lat;
         }
 
-        public void setLng(double lng) {
-            this.lng = lng;
+        public void setLon(double lon) {
+            this.lon = lon;
         }
 
         public void setViewCount(int viewCount) {
@@ -120,7 +122,7 @@ public class SampleDataIndexer {
         public String toString() {
             return "ZigBangItem{" +
                     "lat=" + lat +
-                    ", lng=" + lng +
+                    ", lon=" + lon +
                     ", viewCount=" + viewCount +
                     '}';
         }
@@ -135,7 +137,7 @@ public class SampleDataIndexer {
 
         public ZigBangDocument(ZigBangItem item) {
             this.viewCount = item.viewCount;
-            this.pin = new Pin(item.lat, item.lng);
+            this.pin = new Pin(item.lat, item.lon);
         }
 
         public int getViewCount() {
@@ -151,8 +153,8 @@ public class SampleDataIndexer {
 
             public Pin() {}
 
-            public Pin(double lat, double lng) {
-                this.location = new Location(lat, lng);
+            public Pin(double lat, double lon) {
+                this.location = new Location(lat, lon);
             }
 
             public Location getLocation() {
@@ -165,20 +167,29 @@ public class SampleDataIndexer {
         }
 
         public static class Location {
-            private String geohash;
+            private double lat, lon;
 
             public Location() {}
 
-            public Location(double lat, double lng) {
-                this.geohash = GeoHashUtils.stringEncode(lng, lat);
+            public Location(double lat, double lon) {
+                this.lat = lat;
+                this.lon = lon;
             }
 
-            public String getGeohash() {
-                return geohash;
+            public double getLat() {
+                return lat;
             }
 
-            public void setGeohash(String geohash) {
-                this.geohash = geohash;
+            public void setLat(double lat) {
+                this.lat = lat;
+            }
+
+            public double getLon() {
+                return lon;
+            }
+
+            public void setLon(double lon) {
+                this.lon = lon;
             }
         }
     }

@@ -23,6 +23,14 @@ public class PlaceDocument {
         this.viewCount = viewCount;
     }
 
+    public Pin getPin() {
+        return pin;
+    }
+
+    public void setPin(Pin pin) {
+        this.pin = pin;
+    }
+
     public static class Pin {
         private Location location;
 

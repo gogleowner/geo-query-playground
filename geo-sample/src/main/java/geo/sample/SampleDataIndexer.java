@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import geo.sample.dto.PlaceDocument;
 import geo.sample.dto.ZigbangItem;
 import org.apache.http.HttpHost;
-import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -16,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SampleDataIndexer {
 
@@ -46,27 +46,27 @@ public class SampleDataIndexer {
     }
 
     private void index(List<ZigbangItem> items) {
-        List<IndexRequest> indexRequests = items.stream()
-                .map(PlaceDocument::new)
-                .map(document -> {
-                    try {
-                        System.out.println(mapper.writeValueAsString(document));
-
-                        return new IndexRequest("zigbang", "_doc")
-                                .source(mapper.writeValueAsString(document), XContentType.JSON);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).collect(Collectors.toList());
-
-        indexRequests.forEach(req -> {
+        BulkRequest bulkRequest = new BulkRequest();
+        for (ZigbangItem item : items) {
             try {
-                elasticsearchClient.index(req, RequestOptions.DEFAULT);
-            } catch (IOException e) {
+                bulkRequest.add(
+                        new IndexRequest("zigbang", "_doc")
+                                .source(mapper.writeValueAsString(new PlaceDocument(item)), XContentType.JSON)
+                );
+            } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        });
+        }
 
+        try {
+            BulkResponse bulkResponse = elasticsearchClient.bulk(bulkRequest, RequestOptions.DEFAULT);
+
+            if (bulkResponse.hasFailures()) {
+                throw new RuntimeException("bulk request has fail! : " + bulkResponse.buildFailureMessage());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -76,7 +76,6 @@ public class SampleDataIndexer {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ZigbangResponse {
-
         List<ZigbangItem> mapItems;
 
         public void setMapItems(List<ZigbangItem> mapItems) {

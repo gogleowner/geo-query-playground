@@ -5,7 +5,7 @@
 - https://elasticsearch-py.readthedocs.io/en/master/index.html
 - https://elasticsearch-py.readthedocs.io/en/master/helpers.html
 
-    ```
+```
 def gendata():
     mywords = ['foo', 'bar', 'baz']
     for word in mywords:
@@ -18,7 +18,7 @@ def gendata():
             }
         }
 bulk(es, gendata())
-    ```
+```
 
 ## kibana docker-compose.yml
 

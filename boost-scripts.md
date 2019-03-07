@@ -15,9 +15,8 @@ def gendata():
             "_id": "num",
             "doc": {
               "word": word
-            },
+            }
         }
-
 bulk(es, gendata())
     ```
 
